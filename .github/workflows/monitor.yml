@@ -2,7 +2,7 @@ name: RRT News Monitor
 
 on:
   schedule:
-    - cron: "30 21 * * *"   # 매일 KST 07:00 (= UTC 22:00 전날)
+    - cron: "0 22 * * *"   # 매일 KST 07:00 (= UTC 22:00 전날)
   workflow_dispatch:         # GitHub UI에서 수동 실행 버튼 활성화
 
 jobs:
@@ -23,10 +23,10 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
- - name: Run monitor
+      - name: Run monitor
         env:
-          NTFY_SERVER:     https://ntfy.sh
-          GOOGLE_API_KEY:  ${{ secrets.GOOGLE_API_KEY }}
+          NTFY_SERVER:    https://ntfy.sh
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
         run: python monitor.py
 
       - name: Commit updated state
