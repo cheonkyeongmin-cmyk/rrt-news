@@ -1,2 +1,2 @@
 requests>=2.32
-google-generativeai>=0.7
+google-genai>=0.8
