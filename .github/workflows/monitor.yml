@@ -25,11 +25,10 @@ jobs:
 
       - name: Run monitor
         env:
-          NTFY_SERVER:    https://ntfy.sh
-          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          NTFY_SERVER: https://ntfy.sh
         run: python monitor.py
 
-- name: Commit updated state
+      - name: Commit updated state
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
