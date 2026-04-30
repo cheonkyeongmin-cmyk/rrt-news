@@ -90,20 +90,56 @@ def translate_to_korean(lt_text: str) -> str:
     return resp.json()["responseData"]["translatedText"]
 
 # ── NTFY 알림 ────────────────────────────────────────────
-def send_notification(ko_title: str, article_url: str):
+def send_notification(new_articles: list[dict]):
+    total = len(new_articles)
+    
+    # 본문: 번호 + 제목 목록
+    body = "\n".join(
+        f"{i+1}. {a['ko_title']}" for i, a in enumerate(new_articles)
+    )
+
     requests.post(
         f"{NTFY_SERVER}/{NTFY_TOPIC}",
         headers={
-            "Title":    "RRT 신규 뉴스".encode("utf-8").decode("latin-1"),
-            "Click":    article_url,
+            "Title":    f"RRT 신규 뉴스 {total}건",
+            "Click":    "https://rrt.lt/apie-rrt/naujienos",
             "Priority": "default",
             "Tags":     "newspaper",
         },
-        data=ko_title.encode("utf-8"),
+        data=body.encode("utf-8"),
         timeout=10,
     )
-    print(f"  ✅ 알림 전송: {ko_title}")
-    print(f"     {article_url}")
+    print(f"  ✅ 알림 전송 완료 ({total}건)")
+
+
+def main():
+    print(f"🔍 크롤링 시작: {TARGET_URL}")
+
+    seen     = load_seen()
+    articles = fetch_article_links()
+    print(f"  전체 링크: {len(articles)}건 / 기존 등록: {len(seen)}건")
+
+    new_articles = [a for a in articles if a["url"] not in seen]
+    print(f"  신규 기사: {len(new_articles)}건")
+
+    if not new_articles:
+        print("  ✅ 업데이트 없음. 종료.")
+        return
+
+    # 각 기사 제목 번역
+    for article in new_articles:
+        lt_title = fetch_article_title(article["url"])
+        if not lt_title:
+            lt_title = article["title_hint"]
+        article["ko_title"] = translate_to_korean(lt_title)
+        seen.add(article["url"])
+        print(f"  번역: {article['ko_title']}")
+
+    # 알림 1개로 묶어서 전송
+    send_notification(new_articles)
+
+    save_seen(seen)
+    print("✅ 완료.")
 
 # ── 메인 ─────────────────────────────────────────────────
 def main():
