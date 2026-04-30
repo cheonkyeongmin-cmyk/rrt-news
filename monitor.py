@@ -8,7 +8,7 @@ import os
 import re
 import json
 import requests
-from google import genai
+
 
 # ── 환경변수 (GitHub Secrets) ────────────────────────────
 GOOGLE_API_KEY  = os.environ["GOOGLE_API_KEY"]
@@ -81,15 +81,13 @@ def fetch_article_title(url: str) -> str:
 
 # ── 한글 번역 (Gemini Flash - 무료) ─────────────────────
 def translate_to_korean(lt_text: str) -> str:
-    client = genai.Client(api_key=GOOGLE_API_KEY)
-    response = client.models.generate_content(
-        model="gemini-2.0-flash",        # ← 여기만 변경
-        contents=(
-            "다음 리투아니아어 텍스트를 자연스러운 한국어로 번역해줘. "
-            "번역문만 출력하고 설명은 생략해.\n\n" + lt_text
-        )
+    resp = requests.get(
+        "https://api.mymemory.translated.net/get",
+        params={"q": lt_text, "langpair": "lt|ko"},
+        timeout=10,
     )
-    return response.text.strip()
+    resp.raise_for_status()
+    return resp.json()["responseData"]["translatedText"]
 
 # ── NTFY 알림 ────────────────────────────────────────────
 def send_notification(ko_title: str, article_url: str):
