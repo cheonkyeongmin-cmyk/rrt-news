@@ -81,12 +81,18 @@ def fetch_article_title(url: str) -> str:
     return ""  # 실패 시 빈 문자열 → translate에서 slug 힌트 사용
 
 # ── 한글 번역 (Gemini Flash - 무료) ─────────────────────
+from google import genai
+
+GOOGLE_API_KEY = os.environ["GOOGLE_API_KEY"]
+
 def translate_to_korean(lt_text: str) -> str:
-    genai.configure(api_key=GEMINI_API_KEY)
-    model = genai.GenerativeModel("gemini-1.5-flash")
-    response = model.generate_content(
-        "다음 리투아니아어 텍스트를 자연스러운 한국어로 번역해줘. "
-        "번역문만 출력하고 설명은 생략해.\n\n" + lt_text
+    client = genai.Client(api_key=GOOGLE_API_KEY)
+    response = client.models.generate_content(
+        model="gemini-1.5-flash",
+        contents=(
+            "다음 리투아니아어 텍스트를 자연스러운 한국어로 번역해줘. "
+            "번역문만 출력하고 설명은 생략해.\n\n" + lt_text
+        )
     )
     return response.text.strip()
 
