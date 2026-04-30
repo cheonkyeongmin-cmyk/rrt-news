@@ -83,7 +83,7 @@ def fetch_article_title(url: str) -> str:
 def translate_to_korean(lt_text: str) -> str:
     client = genai.Client(api_key=GOOGLE_API_KEY)
     response = client.models.generate_content(
-        model="gemini-1.5-flash",
+        model="gemini-2.0-flash",        # ← 여기만 변경
         contents=(
             "다음 리투아니아어 텍스트를 자연스러운 한국어로 번역해줘. "
             "번역문만 출력하고 설명은 생략해.\n\n" + lt_text
