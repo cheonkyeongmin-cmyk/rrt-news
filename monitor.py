@@ -94,7 +94,7 @@ def send_notification(ko_title: str, article_url: str):
     requests.post(
         f"{NTFY_SERVER}/{NTFY_TOPIC}",
         headers={
-            "Title":    "🇱🇹 RRT 신규 뉴스",
+            "Title":    "RRT 신규 뉴스".encode("utf-8").decode("latin-1"),
             "Click":    article_url,
             "Priority": "default",
             "Tags":     "newspaper",
