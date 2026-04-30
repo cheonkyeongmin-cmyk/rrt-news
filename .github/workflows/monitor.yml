@@ -23,10 +23,10 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Run monitor
+ - name: Run monitor
         env:
-          NTFY_SERVER:    https://ntfy.sh
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          NTFY_SERVER:     https://ntfy.sh
+          GOOGLE_API_KEY:  ${{ secrets.GOOGLE_API_KEY }}
         run: python monitor.py
 
       - name: Commit updated state
