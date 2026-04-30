@@ -8,12 +8,12 @@ import os
 import re
 import json
 import requests
-import google.generativeai as genai
+from google import genai
 
 # ── 환경변수 (GitHub Secrets) ────────────────────────────
+GOOGLE_API_KEY  = os.environ["GOOGLE_API_KEY"]
 NTFY_TOPIC      = os.environ.get("NTFY_TOPIC", "peter-rrt-news")
 NTFY_SERVER     = os.environ.get("NTFY_SERVER", "https://ntfy.sh")
-GEMINI_API_KEY  = os.environ["GEMINI_API_KEY"]
 
 TARGET_URL  = "https://rrt.lt/apie-rrt/naujienos"
 BASE_URL    = "https://rrt.lt"
@@ -53,7 +53,6 @@ def fetch_article_links() -> list[dict]:
     articles = []
     for slug in slugs:
         full_url = BASE_URL + slug
-        # slug 마지막 부분을 제목 힌트로 사용 (실제 제목은 기사 페이지에서 가져옴)
         title_hint = slug.split("/")[-1].replace("-", " ")
         articles.append({"url": full_url, "title_hint": title_hint})
 
@@ -78,13 +77,9 @@ def fetch_article_title(url: str) -> str:
 
     except Exception:
         pass
-    return ""  # 실패 시 빈 문자열 → translate에서 slug 힌트 사용
+    return ""
 
 # ── 한글 번역 (Gemini Flash - 무료) ─────────────────────
-from google import genai
-
-GOOGLE_API_KEY = os.environ["GOOGLE_API_KEY"]
-
 def translate_to_korean(lt_text: str) -> str:
     client = genai.Client(api_key=GOOGLE_API_KEY)
     response = client.models.generate_content(
@@ -128,10 +123,9 @@ def main():
         return
 
     for article in new_articles:
-        # 기사 페이지에서 실제 제목 가져오기
         lt_title = fetch_article_title(article["url"])
         if not lt_title:
-            lt_title = article["title_hint"]   # 실패 시 slug 기반 힌트 사용
+            lt_title = article["title_hint"]
 
         ko_title = translate_to_korean(lt_title)
         send_notification(ko_title, article["url"])
