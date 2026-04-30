@@ -11,7 +11,6 @@ import requests
 
 
 # ── 환경변수 (GitHub Secrets) ────────────────────────────
-GOOGLE_API_KEY  = os.environ["GOOGLE_API_KEY"]
 NTFY_TOPIC      = os.environ.get("NTFY_TOPIC", "peter-rrt-news")
 NTFY_SERVER     = os.environ.get("NTFY_SERVER", "https://ntfy.sh")
 
