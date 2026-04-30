@@ -2,7 +2,7 @@ name: RRT News Monitor
 
 on:
   schedule:
-    - cron: "0 22 * * *"   # 매일 KST 07:00 (= UTC 22:00 전날)
+    - cron: "30 21 * * *"   # 매일 KST 07:00 (= UTC 22:00 전날)
   workflow_dispatch:         # GitHub UI에서 수동 실행 버튼 활성화
 
 jobs:
